@@ -47,21 +47,21 @@ func first() {
 	fmt.Println(total)
 }
 
-var (
-	rockL    = "A"
-	paperL   = "B"
-	scissorL = "C"
-
-	lose = "X"
-	draw = "Y"
-	win  = "Z"
-
-	rock    = 1
-	paper   = 2
-	scissor = 3
-)
-
 func main() {
+
+	var (
+		rockL    = "A"
+		paperL   = "B"
+		scissorL = "C"
+
+		lose = "X"
+		draw = "Y"
+		win  = "Z"
+
+		rock    = 1
+		paper   = 2
+		scissor = 3
+	)
 	f, err := os.Open("./input.txt")
 	if err != nil {
 		panic(err)
@@ -76,10 +76,13 @@ func main() {
 
 		switch first + second {
 		case scissorL + draw, rockL + lose, paperL + win:
+			// Scissor wins
 			startScore += scissor
 		case paperL + draw, rockL + win, scissorL + lose:
+			// paper wins
 			startScore += paper
 		case rockL + draw, paperL + lose, scissorL + win:
+			// Rock wins
 			startScore += rock
 		default:
 			panic(line)
