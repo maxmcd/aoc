@@ -1,25 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/maxmcd/aoc"
 )
 
 func main() {
-	f, err := os.Open("./input.txt")
-	if err != nil {
-		panic(err)
-	}
-
-	scanner := bufio.NewScanner(f)
 	containsCount := 0
 
 	overlapAtAll := 0
-	for scanner.Scan() {
-		line := scanner.Text()
+	aoc.ReadInput(func(line string) {
 		// 1-2,2-96
 		first, second, _ := strings.Cut(line, ",")
 		fStartS, fEndS, _ := strings.Cut(first, "-")
@@ -32,14 +25,14 @@ func main() {
 
 		if fStart <= sStart && fEnd >= sEnd {
 			containsCount++
-			fmt.Println(line)
+			// fmt.Println(line)
 		} else if sStart <= fStart && sEnd >= fEnd {
 			containsCount++
-			fmt.Println(line)
+			// fmt.Println(line)
 		}
 		if sStart <= fEnd && sEnd >= fStart {
 			overlapAtAll++
 		}
-	}
+	})
 	fmt.Println(containsCount, overlapAtAll)
 }
