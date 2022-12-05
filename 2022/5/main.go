@@ -43,10 +43,9 @@ func run(is9001 bool) {
 				initializeStacks()
 				initialized = true
 			}
-			parts := strings.Split(line, " ")
-			amount := aoc.Atoi(parts[1])
-			start := aoc.Atoi(parts[3])
-			end := aoc.Atoi(parts[5])
+			var amount, start, end int
+			aoc.Sscanf(line, "move %d from %d to %d", &amount, &start, &end)
+
 			if is9001 {
 				values := []string{}
 				for i := 0; i < amount; i++ {
