@@ -3,6 +3,7 @@ package aoc
 import (
 	"bufio"
 	"os"
+	"strconv"
 )
 
 func ReadInput(cb func(line string)) {
@@ -15,4 +16,12 @@ func ReadInput(cb func(line string)) {
 		line := scanner.Text()
 		cb(line)
 	}
+}
+
+func Atoi(s string) int {
+	v, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+	return v
 }
