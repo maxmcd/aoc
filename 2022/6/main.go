@@ -19,6 +19,10 @@ func detectNDistinct(line string, n int) {
 		track := make(map[string]struct{}, n)
 		for j := 0; j < n; j++ {
 			track[string(line[i+j])] = struct{}{}
+			if len(track) < j+1 {
+				// Early exit
+				break
+			}
 		}
 		if len(track) == n {
 			fmt.Println(i+n, track)
