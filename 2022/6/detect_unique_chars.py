@@ -1,41 +1,41 @@
 import peachpy
-import peachpy.x86_64
+from peachpy.x86_64 import *
 
-# Define a function that takes a pointer to a string and its length
-@peachpy.x86_64.function('detect_unique_chars')
-def detect_unique_chars(string_ptr: peachpy.x86_64.abi.pointer, length: peachpy.x86_64.abi.size_t) -> peachpy.x86_64.abi.int:
-    # Load the length of the string into a register
-    length_reg = peachpy.x86_64.GeneralPurposeRegister64()
-    peachpy.x86_64.MOV(length_reg, length)
+# Function to detect if a string contains unique elements
+@peachpy.function
+def unique_elements(string: str, length: int):
+    # Set up function arguments
+    string_pointer = Argument(ptr(const_char))
+    length_pointer = Argument(ptr(const_int))
 
-    # Load the pointer to the string into a register
-    string_ptr_reg = peachpy.x86_64.GeneralPurposeRegister64()
-    peachpy.x86_64.MOV(string_ptr_reg, string_ptr)
+    # Load arguments
+    with Function("unique_elements", (string_pointer, length_pointer)):
+        # Load the string and length
+        string_pointer = GeneralPurposeRegister.rdi
+        length_pointer = GeneralPurposeRegister.rsi
+        string = mem_ptr[string_pointer]
+        length = mem_ptr[length_pointer]
 
-    # Initialize a register to store the result
-    result_reg = peachpy.x86_64.GeneralPurposeRegister64()
-    peachpy.x86_64.MOV(result_reg, 0)
+        # Set up loop counters and a bitmap to track seen characters
+        i = GeneralPurposeRegister.r8
+        j = GeneralPurposeRegister.r9
+        bitmap = GeneralPurposeRegister.r10
+        mov(bitmap, 0)
 
-    # Loop through the string by incrementing the pointer and decrementing the length
-    loop_label = peachpy.x86_64.Label()
-    peachpy.x86_64.LABEL(loop_label)
-    with peachpy.x86_64.If(length_reg > 0):
-        # Load the current character into a register
-        current_char_reg = peachpy.x86_64.AVXRegister(1)
-        peachpy.x86_64.VMOV(current_char_reg, [string_ptr_reg])
+        # Loop through the string, checking each character against the bitmap
+        for char in string:
+            # Shift the bitmap and set the bit for the current character
+            shl(bitmap, 1)
+            or_(bitmap, 1 << (ord(char) % 64))
 
-        # XOR the current character with the result to "add" it to the result
-        peachpy.x86_64.VPXOR(current_char_reg, result_reg, current_char_reg)
+            # Check if the bitmap already has the bit set for this character
+            jz(".not_unique")
 
-        # Store the result back in the result register
-        peachpy.x86_64.VMOV(result_reg, current_char_reg)
+        # If we reach the end of the loop, the string has unique elements
+        mov(al, 1)
+        ret()
 
-        # Increment the pointer and decrement the length
-        peachpy.x86_64.ADD(string_ptr_reg, 1)
-        peachpy.x86_64.DEC(length_reg)
-
-        # Jump back to the beginning of the loop
-        peachpy.x86_64.JMP(loop_label)
-
-    # Return the result
-    peachpy.x86_64.RETURN(result_reg)
+        # If we encounter a non-unique character, return 0
+        LABEL(".not_unique")
+        mov(al, 0)
+        ret()
