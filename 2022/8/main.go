@@ -113,22 +113,15 @@ func main() {
 		for x, tree := range row {
 			score := 1
 			for _, mutator := range []func(int, int) (int, int){
-				func(x, y int) (int, int) {
-					return x, y + 1
-				},
-				func(x, y int) (int, int) {
-					return x, y - 1
-				},
-				func(x, y int) (int, int) {
-					return x + 1, y
-				},
-				func(x, y int) (int, int) {
-					return x - 1, y
-				},
+				func(x, y int) (int, int) { return x, y + 1 },
+				func(x, y int) (int, int) { return x, y - 1 },
+				func(x, y int) (int, int) { return x + 1, y },
+				func(x, y int) (int, int) { return x - 1, y },
 			} {
 				thisScore := 0
-				nx, ny := mutator(x, y)
+				nx, ny := x, y
 				for {
+					nx, ny = mutator(nx, ny)
 					ot := safeGet(nx, ny)
 					if ot == nil {
 						break
@@ -137,7 +130,6 @@ func main() {
 					if ot.Height >= tree.Height {
 						break
 					}
-					nx, ny = mutator(nx, ny)
 				}
 				score = score * thisScore
 			}
